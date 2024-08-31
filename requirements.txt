@@ -5,3 +5,8 @@ jupyter
 google-api-python-client 
 google-auth-httplib2 
 google-auth-oauthlib
+
+## app
+dash
+dash_bootstrap_components
+psycopg2

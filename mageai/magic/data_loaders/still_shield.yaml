@@ -1,0 +1,10 @@
+config:
+  database: null
+  host: null
+  password: null
+  port: 5432
+  schema: null
+  username: null
+  replication_slot: null
+  publication_name: null
+source: postgresql

@@ -1,0 +1,3 @@
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_folder_files"}, "timestamp": 1725071734, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_folder_files"}, "timestamp": 1725072462, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_folders_file"}, "timestamp": 1725072857, "user": null}

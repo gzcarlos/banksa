@@ -1,4 +1,13 @@
 version: 0.1.1
+dev:
+  # PostgresSQL
+  POSTGRES_CONNECT_TIMEOUT: 10
+  POSTGRES_DBNAME: banksa
+  POSTGRES_SCHEMA: public # Optional
+  POSTGRES_USER: root
+  POSTGRES_PASSWORD: root
+  POSTGRES_HOST: pg-database
+  POSTGRES_PORT: 5432
 default:
   # Default profile created for data IO access.
   # Add your credentials for the source you use, and delete the rest.
