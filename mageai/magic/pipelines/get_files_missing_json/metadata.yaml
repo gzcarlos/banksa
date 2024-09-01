@@ -1,0 +1,213 @@
+blocks:
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - vibrant_bard
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: amazing artificer
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - resplendent_cloud
+  uuid: amazing_artificer
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: yaml
+  name: vibrant bard
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - amazing_artificer
+  uuid: vibrant_bard
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - amazing_artificer
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: yaml
+  name: resplendent cloud
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: resplendent_cloud
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2024-09-01 16:14:04.270698+00:00'
+data_integration:
+  catalog:
+    streams:
+    - auto_add_new_fields: false
+      bookmark_properties: []
+      destination_table: files
+      key_properties:
+      - id
+      metadata:
+      - breadcrumb: []
+        metadata:
+          forced-replication-method: FULL_TABLE
+          inclusion: available
+          schema-name: files
+          selected: true
+          table-key-properties:
+          - id
+          valid-replication-keys: []
+      - breadcrumb:
+        - properties
+        - created_at
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - updated_at
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - json_extracted
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - transactions_extracted
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - id
+        metadata:
+          inclusion: automatic
+          selected: true
+      - breadcrumb:
+        - properties
+        - _mage_created_at
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - _mage_updated_at
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - file_text
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - generated_json
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - name
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - size
+        metadata:
+          inclusion: available
+          selected: true
+      replication_method: FULL_TABLE
+      schema:
+        properties:
+          _mage_created_at:
+            format: date-time
+            type:
+            - 'null'
+            - string
+          _mage_updated_at:
+            format: date-time
+            type:
+            - 'null'
+            - string
+          created_at:
+            format: date-time
+            type:
+            - 'null'
+            - string
+          file_text:
+            type:
+            - 'null'
+            - string
+          generated_json:
+            properties: {}
+            type:
+            - 'null'
+            - object
+          id:
+            type:
+            - integer
+          json_extracted:
+            type:
+            - 'null'
+            - boolean
+          name:
+            type:
+            - string
+          size:
+            type:
+            - 'null'
+            - number
+          transactions_extracted:
+            type:
+            - 'null'
+            - boolean
+          updated_at:
+            format: date-time
+            type:
+            - 'null'
+            - string
+        type: object
+      stream: files
+      tap_stream_id: files
+      unique_conflict_method: UPDATE
+      unique_constraints:
+      - id
+description: null
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: get_files_missing_json
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: integration
+uuid: get_files_missing_json
+variables_dir: /home/src/mage_data/magic
+widgets: []

@@ -1,0 +1,10 @@
+config:
+  database: banksa
+  host: pg-database
+  password: root
+  port: 5432
+  schema: public
+  username: root
+  replication_slot: null
+  publication_name: null
+source: postgresql

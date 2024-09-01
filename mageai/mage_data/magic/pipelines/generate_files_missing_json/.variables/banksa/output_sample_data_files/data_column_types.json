@@ -1,0 +1,1 @@
+{"updated_at": "int64", "json_extracted": "bool", "transactions_extracted": "bool", "id": "int64", "name": "str", "size": "float64"}

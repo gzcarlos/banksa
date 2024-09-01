@@ -9,4 +9,12 @@ google-auth-oauthlib
 ## app
 dash
 dash_bootstrap_components
+dash_uploader
 psycopg2
+pypdf
+
+## llm
+groq
+
+## others
+python-dotenv

@@ -90,3 +90,55 @@ def update_folder_in_db(folder_path):
             cur.close()
         if conn:
             conn.close()
+
+def file_exists(file_name, file_size):
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute(
+            sql.SQL("SELECT 1 from files where name = {} and size = {}").format(sql.Literal(file_name), sql.Literal(file_size))
+        )
+        if cur.rowcount > 0:
+            return True
+        return False
+    except Exception as e:
+        print(f'Error on exsits: {str(e)}')
+        return False
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+def insert_file(file_name, file_size, file_text):
+
+    cur = None
+    conn = None
+    file_size = round(file_size, 2)
+    exists = file_exists(file_name, file_size)
+    if not exists:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+
+            # Insert new file
+            cur.execute(
+                sql.SQL("INSERT INTO files(name, size, file_text) values ( {}, {}, {} )").format(sql.Literal(file_name), sql.Literal(file_size), sql.Literal(file_text))
+            )
+            rows_inserted = cur.rowcount
+            conn.commit()
+            return rows_inserted, f"File '{file_name}' with has been inserted in the database."
+
+        except Exception as e:
+            return 0, f"An error occurred: {str(e)}"
+
+        finally:
+            if cur:
+                cur.close()
+            if conn:
+                conn.close()
+    else:
+        return 0, f"File {file_name} with size of {file_size} KB has already been loaded"

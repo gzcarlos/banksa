@@ -1,0 +1,7 @@
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "test_streaming"}, "timestamp": 1725201084, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "test_data_integration"}, "timestamp": 1725201138, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "generate_files_missing_json"}, "timestamp": 1725202241, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_files_missing_json"}, "timestamp": 1725205112, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_files_missing_json"}, "timestamp": 1725205428, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_files_missing_json"}, "timestamp": 1725206002, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_files_missing_json"}, "timestamp": 1725207244, "user": null}

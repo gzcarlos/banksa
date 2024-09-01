@@ -1,0 +1,87 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    file_path: sensors/check_new_files.py
+    file_source:
+      path: sensors/check_new_files.py
+  downstream_blocks:
+  - get_new_files_text
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: check_new_files
+  retry_config: null
+  status: executed
+  timeout: null
+  type: sensor
+  upstream_blocks: []
+  uuid: check_new_files
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    data_provider: postgres
+    data_provider_profile: dev
+    dbt: {}
+    disable_query_preprocessing: false
+    export_write_policy: append
+    limit: 1000
+    use_raw_sql: true
+  downstream_blocks:
+  - generate_json
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: sql
+  name: get_new_files_text
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks:
+  - check_new_files
+  uuid: get_new_files_text
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    data_provider: postgres
+    data_provider_profile: dev
+    export_write_policy: append
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: generate_json
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - get_new_files_text
+  uuid: generate_json
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2024-08-31 02:54:16.647222+00:00'
+data_integration: null
+description: Get files from Google Drive folder
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: generate_files_transactions
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: python
+uuid: generate_files_transactions
+variables_dir: /home/src/mage_data/magic
+widgets: []

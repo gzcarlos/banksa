@@ -1,9 +1,19 @@
 import dash
 from dash import html, dcc
 import dash_bootstrap_components as dbc
+import os
+import dash_uploader as du
 # from pages import home
 
 app = dash.Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+# Set up a folder for file uploads
+UPLOAD_FOLDER_ROOT = "uploads"
+if not os.path.exists(UPLOAD_FOLDER_ROOT):
+    os.makedirs(UPLOAD_FOLDER_ROOT)
+
+# Configure the uploader
+du.configure_upload(app, UPLOAD_FOLDER_ROOT)
 
 app.layout = html.Div([
     dbc.NavbarSimple(

@@ -1,0 +1,8 @@
+config:
+  database: banksa
+  host: pg-database
+  password: root
+  port: 5432
+  schema: public
+  username: root
+destination: postgresql

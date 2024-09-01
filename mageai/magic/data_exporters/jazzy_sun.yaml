@@ -1,0 +1,8 @@
+config:
+  database: null
+  host: null
+  password: null
+  port: 5432
+  schema: null
+  username: null
+destination: postgresql

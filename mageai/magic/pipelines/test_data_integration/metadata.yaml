@@ -1,0 +1,192 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - graceful_snow
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: yaml
+  name: shy maple
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: shy_maple
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - jazzy_sun
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: graceful snow
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - shy_maple
+  uuid: graceful_snow
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: yaml
+  name: jazzy sun
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - graceful_snow
+  uuid: jazzy_sun
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2024-09-01 14:32:17.755657+00:00'
+data_integration:
+  catalog:
+    streams:
+    - auto_add_new_fields: false
+      bookmark_properties:
+      - text_extracted
+      destination_table: files
+      key_properties:
+      - id
+      metadata:
+      - breadcrumb: []
+        metadata:
+          forced-replication-method: FULL_TABLE
+          inclusion: available
+          schema-name: files
+          selected: true
+          table-key-properties:
+          - id
+          valid-replication-keys: []
+      - breadcrumb:
+        - properties
+        - created_at
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - updated_at
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - text_extracted
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - transactions_extracted
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - id
+        metadata:
+          inclusion: automatic
+          selected: true
+      - breadcrumb:
+        - properties
+        - file_text
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - generated_json
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - name
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - size
+        metadata:
+          inclusion: available
+          selected: true
+      replication_method: INCREMENTAL
+      schema:
+        properties:
+          created_at:
+            format: date-time
+            type:
+            - 'null'
+            - string
+          file_text:
+            type:
+            - 'null'
+            - string
+          generated_json:
+            properties: {}
+            type:
+            - 'null'
+            - object
+          id:
+            type:
+            - integer
+          name:
+            type:
+            - string
+          size:
+            type:
+            - 'null'
+            - number
+          text_extracted:
+            type:
+            - 'null'
+            - boolean
+          transactions_extracted:
+            type:
+            - 'null'
+            - boolean
+          updated_at:
+            format: date-time
+            type:
+            - 'null'
+            - string
+        type: object
+      stream: files
+      tap_stream_id: files
+      unique_conflict_method: UPDATE
+      unique_constraints:
+      - id
+description: null
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: test_data_integration
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: integration
+uuid: test_data_integration
+variables_dir: /home/src/mage_data/magic
+widgets: []

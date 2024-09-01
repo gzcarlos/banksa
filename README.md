@@ -13,6 +13,7 @@ docker network create banksa-network
 
 ### Mage AI
 
+Create container
 ```bash
 docker run -d \
   --name mage \
@@ -20,6 +21,13 @@ docker run -d \
   -v $(pwd)/mageai:/home/src \
   --network=banksa-network \
   mageai/mageai mage start magic
+```
+
+Instal missing packages inside the Mage container
+
+```bash
+docker exec -it mage bash
+pip install groq openai
 ```
 
 ### Google Drive API
@@ -82,13 +90,18 @@ Check status on [http://localhost:9200/_cluster/health?pretty](http://localhost:
 
 ```sql
 CREATE TABLE files (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    size FLOAT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  size FLOAT,
+  file_text TEXT,
+  generated_json JSONB,
+  json_extracted BOOLEAN DEFAULT False,
+  transactions_extracted BOOLEAN default False,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE folders (
-    id TEXT PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id TEXT PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
