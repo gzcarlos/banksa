@@ -1,5 +1,6 @@
 import psycopg2
 from psycopg2 import sql
+import pandas as pd
 import os
 
 def get_db_connection():
@@ -142,3 +143,47 @@ def insert_file(file_name, file_size, file_text):
                 conn.close()
     else:
         return 0, f"File {file_name} with size of {file_size} KB has already been loaded"
+    
+def get_uploaded_files():
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = sql.SQL("""
+            select 
+              a.id
+              , a.name as file_name
+              , a.size as file_size
+              , case 
+                  when a.json_extracted then 'Yes'
+                  else 'No'
+                  end as content_processed
+              , case 
+                  when a.transactions_extracted then 'Yes'
+                  else 'No'
+                  end as transactions_extracted
+              , count(b.id) n_transactions
+            from files a
+            left join transactions b
+              on a.id = b.file_id
+            group by a.id, a.name, a.size, a.json_extracted, a.transactions_extracted
+            order by a.created_at desc 
+            """)
+        
+        cur.execute(query)
+
+        column_names = [desc[0] for desc in cur.description]
+        results = cur.fetchall()
+
+        df = pd.DataFrame(results, columns=column_names)
+        return df, "Successfully retrieved file list from database."
+    except Exception as e:
+        print(str(e))
+        return pd.DataFrame(), f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
