@@ -54,21 +54,71 @@ def layout_when_no_data():
         html.A("Upload One", href="/upload", className="mb-1 btn btn-primary"),
     ]
 
+def get_style_data_conditional():
+    return [
+        {
+            'if': {'column_id' : 'file_size'},
+            'textAlign': 'right'
+        },
+        {
+            'if': {'column_id' : 'n_transactions'},
+            'textAlign': 'right'
+        },
+        {
+            'if': {'column_id' : 'content_processed'},
+            'textAlign': 'center'
+        },
+        {
+            'if': {'column_id' : 'transactions_extracted'},
+            'textAlign': 'center'
+        },
+        {
+            'if': {
+                'column_id' : 'transactions_extracted',
+                'filter_query': '{transactions_extracted} = "Yes"'
+            },
+            'backgroundColor': '#91FFD5'
+        },
+        {
+            'if': {
+                'column_id' : 'transactions_extracted',
+                'filter_query': '{transactions_extracted} = "No"'
+            },
+            'backgroundColor': '#FFA491'
+        },
+        {
+            'if': {
+                'column_id' : 'content_processed',
+                'filter_query': '{content_processed} = "Yes"'
+            },
+            'backgroundColor': '#91FFD5'
+        },
+        {
+            'if': {
+                'column_id' : 'content_processed',
+                'filter_query': '{content_processed} = "No"'
+            },
+            'backgroundColor': '#FFA491'
+        },
+    ]
+
 def layout_when_data(df: pd.DataFrame):
     home_content = [
         html.P("This are the files you have uploaded.", className="mb-3"),
         html.A("Upload more", href="/upload", className="mb-3 btn btn-info"),
     ]
+    
+    style_data_conditional = get_style_data_conditional()
 
     data_table = dash_table.DataTable(
         id='file-table',
         data=df.to_dict('records'),
         columns=[
-            {'name': 'File Name', 'id': 'file_name'},
-            {'name': 'Size (bytes)', 'id': 'file_size'},
-            {'name': 'Content Processed?', 'id': 'content_processed'},
-            {'name': 'Transactions Extracted?', 'id': 'transactions_extracted'},
-            {'name': '# Transactions', 'id': 'n_transactions'}
+            {'name': 'File Name', 'id': 'file_name', "type":"text"},
+            {'name': 'Size (bytes)', 'id': 'file_size', "type":"numeric", "format": dash_table.Format.Format(precision=2, scheme=dash_table.Format.Scheme.fixed)},
+            {'name': 'Content Processed?', 'id': 'content_processed', "type":"text"},
+            {'name': 'Transactions Extracted?', 'id': 'transactions_extracted', "type":"text"},
+            {'name': '# Transactions', 'id': 'n_transactions', "type":"numeric"}
         ],
         style_table={'height': '400px', 'overflowY': 'auto'},
         style_cell={'textAlign': 'left'},
@@ -76,6 +126,7 @@ def layout_when_data(df: pd.DataFrame):
             'backgroundColor': 'rgb(230, 230, 230)',
             'fontWeight': 'bold'
         },
+        style_data_conditional=style_data_conditional,
         sort_action='native',
         filter_action='native',
     )

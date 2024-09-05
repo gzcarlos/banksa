@@ -187,3 +187,48 @@ def get_uploaded_files():
             cur.close()
         if conn:
             conn.close()
+def get_file_transactions(file_id):
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = sql.SQL("""
+            select 
+              a.id
+              , a.statement_date
+              , a.statement_year
+              , a.statement_month
+              , coalesce(a.date, a._date) as date -- same as ISNULL
+              , a.description
+              , coalesce(
+                  a.suggested_category,
+                  coalesce(
+                      a.predicted_category, 
+                      a.category
+                  )
+                ) as category
+              , a.amount
+              , a.currency
+              , coalesce(a._type, a.type) as "type"
+            from transactions a
+            where a.file_id = {} 
+            """).format(sql.Literal(file_id))
+        
+        cur.execute(query)
+
+        column_names = [desc[0] for desc in cur.description]
+        results = cur.fetchall()
+
+        df = pd.DataFrame(results, columns=column_names)
+
+        return df, "Successfully retrieved file list from database."
+    except Exception as e:
+        print(f"An error ocurred: {str(e)}")
+        return pd.DataFrame(), f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
