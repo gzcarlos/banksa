@@ -104,4 +104,71 @@ CREATE TABLE folders (
   id TEXT PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+create table transactions(
+  id SERIAL PRIMARY KEY ,
+  file_id integer,
+
+  statement_date date,
+  statement_year integer,
+  statement_month integer,
+  amount float,
+  category text,
+  currency text,
+  date date,
+  description text,
+  type text,
+  
+  _statement_date date,
+  _statement_year integer,
+  _statement_month integer,
+  _amount float,
+  _category text,
+  _currency text,
+  _date date,
+  _description text,
+  _type text,
+  
+  predict_category boolean default true,
+  predicted_category text,
+
+  confirmed_category boolean,
+  suggested_category text,  
+  
+  created_at timestamp default current_timestamp,
+  updated_at timestamp,
+  constraint trans_fk1 foreign key(file_id) references files(id)
+);
+create table knowledge_base(
+  id serial primary key,
+  
+  description text,
+  category text, 
+
+  upvoted boolean,
+  downvoted boolean,
+  suggested_category text,
+
+  updated_transactions boolean default false,
+  
+  indexed boolean default false,
+  
+  created_at timestamp default current_timestamp,
+  updated_at timestamp
+);
+```
+
+
+Run extract_transactions_from_files
+```bash
+curl -X POST http://localhost:6789/api/pipeline_schedules/4/pipeline_runs/aa5cf2fcfd4c4e7fb64c7da8ef924b25 --header 'Content-Type: application/json'
+```
+```python
+import requests
+# do not wait for the response
+try:
+    requests.post("http://localhost:6789/api/pipeline_schedules/4/pipeline_runs/aa5cf2fcfd4c4e7fb64c7da8ef924b25", 
+                  headers={"Content-Type": "application/json"}, 
+                  timeout=0.01)
+except requests.exceptions.ReadTimeout:
+    pass  # This will almost always happen, which is what we want
 ```

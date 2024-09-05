@@ -1,0 +1,1 @@
+{"id": "int64", "name": "str", "size": "float64", "file_text": "str", "generated_json": "dict", "json_extracted": "bool", "transactions_extracted": "bool", "created_at": "datetime64[ns]", "updated_at": "datetime64[ns]", "_mage_updated_at": "datetime64[ns, UTC]"}

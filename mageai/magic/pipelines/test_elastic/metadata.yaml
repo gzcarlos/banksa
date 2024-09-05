@@ -3,35 +3,18 @@ blocks:
   color: null
   configuration: {}
   downstream_blocks:
-  - graceful_snow
+  - resplendent_sword
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: yaml
-  name: shy maple
+  name: fabled haiku
   retry_config: null
   status: updated
   timeout: null
   type: data_loader
   upstream_blocks: []
-  uuid: shy_maple
-- all_upstream_blocks_executed: false
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - jazzy_sun
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: graceful snow
-  retry_config: null
-  status: updated
-  timeout: null
-  type: transformer
-  upstream_blocks:
-  - shy_maple
-  uuid: graceful_snow
+  uuid: fabled_haiku
 - all_upstream_blocks_executed: false
   color: null
   configuration: {}
@@ -40,26 +23,24 @@ blocks:
   executor_type: local_python
   has_callback: false
   language: yaml
-  name: jazzy sun
+  name: resplendent sword
   retry_config: null
   status: updated
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - graceful_snow
-  uuid: jazzy_sun
+  - fabled_haiku
+  uuid: resplendent_sword
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
 conditionals: []
-created_at: '2024-09-01 14:32:17.755657+00:00'
+created_at: '2024-09-05 11:27:02.379893+00:00'
 data_integration:
   catalog:
     streams:
     - auto_add_new_fields: false
-      bookmark_properties:
-      - text_extracted
-      destination_table: files
+      destination_table: knowledge_base
       key_properties:
       - id
       metadata:
@@ -67,7 +48,7 @@ data_integration:
         metadata:
           forced-replication-method: FULL_TABLE
           inclusion: available
-          schema-name: files
+          schema-name: knowledge_base
           selected: true
           table-key-properties:
           - id
@@ -80,19 +61,13 @@ data_integration:
           selected: true
       - breadcrumb:
         - properties
-        - updated_at
+        - indexed
         metadata:
           inclusion: available
           selected: true
       - breadcrumb:
         - properties
-        - text_extracted
-        metadata:
-          inclusion: available
-          selected: true
-      - breadcrumb:
-        - properties
-        - transactions_extracted
+        - updated_transactions
         metadata:
           inclusion: available
           selected: true
@@ -104,71 +79,87 @@ data_integration:
           selected: true
       - breadcrumb:
         - properties
-        - file_text
+        - category
         metadata:
           inclusion: available
           selected: true
       - breadcrumb:
         - properties
-        - generated_json
+        - description
         metadata:
           inclusion: available
           selected: true
       - breadcrumb:
         - properties
-        - name
+        - downvoted
         metadata:
           inclusion: available
           selected: true
       - breadcrumb:
         - properties
-        - size
+        - suggested_category
         metadata:
           inclusion: available
           selected: true
-      replication_method: INCREMENTAL
+      - breadcrumb:
+        - properties
+        - updated_at
+        metadata:
+          inclusion: available
+          selected: true
+      - breadcrumb:
+        - properties
+        - upvoted
+        metadata:
+          inclusion: available
+          selected: true
+      replication_method: FULL_TABLE
       schema:
         properties:
+          category:
+            type:
+            - 'null'
+            - string
           created_at:
             format: date-time
             type:
             - 'null'
             - string
-          file_text:
+          description:
             type:
             - 'null'
             - string
-          generated_json:
-            properties: {}
+          downvoted:
             type:
             - 'null'
-            - object
+            - boolean
           id:
             type:
             - integer
-          name:
+          indexed:
             type:
+            - 'null'
+            - boolean
+          suggested_category:
+            type:
+            - 'null'
             - string
-          size:
-            type:
-            - 'null'
-            - number
-          text_extracted:
-            type:
-            - 'null'
-            - boolean
-          transactions_extracted:
-            type:
-            - 'null'
-            - boolean
           updated_at:
             format: date-time
             type:
             - 'null'
             - string
+          updated_transactions:
+            type:
+            - 'null'
+            - boolean
+          upvoted:
+            type:
+            - 'null'
+            - boolean
         type: object
-      stream: files
-      tap_stream_id: files
+      stream: knowledge_base
+      tap_stream_id: knowledge_base
       unique_conflict_method: UPDATE
       unique_constraints:
       - id
@@ -177,7 +168,7 @@ executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: test_data_integration
+name: test_elastic
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -187,6 +178,6 @@ settings:
 spark_config: {}
 tags: []
 type: integration
-uuid: test_data_integration
+uuid: test_elastic
 variables_dir: /home/src/mage_data/magic
 widgets: []

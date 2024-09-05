@@ -54,63 +54,40 @@ def get_json_from_text_oa(text):
 def prompt_template(question):
 
     system_prompt = """
-    You are a bank specialist and recieve a bank statement from a PDF in text.
-    You can easily extract transactions from the PDF and list them in JSON thanks your IT team.
-    Your goal is to find the elements of the transactions from TEXT and return them in json format.
-    For example if the user asks:
-    Return the following data from the bank statement text:
-    ```
-    {
-        "year": "year of the transaction in format YYYY",
-        "month": "month of the transaction in format MM",
-        "date": "the full date of the transaction in format YYYY-MM-DD",
-        "description": "description of the transaction",
-        "amount": "float specifiying the amount of the transaction",
-        "currency": "currency on which was made the transaction"
-    }
-    ```
-    Make sure to return a json with the list of corresponding values
-    Output json:
-    ```json
-    {
-        "transactions": [
-        {"year": 2024, "month": 8, "date": "2024-08-15", "descrition": "description1", "amount": 100, "currency": "USD"},
-        {"year": 2024, "month": 8, "date": "2024-08-16", "descrition": "description1", "amount": 110, "currency": "USD"},
-        {"year": 2024, "month": 8, "date": "2024-08-17", "descrition": "description1", "amount": 120, "currency": "USD"}
-        ]
-    }
-    ```
-
-    if the user asks for others fields that are not part of an specific transaction:
+    You are a bank specialist and received a bank statement from a PDF in text.
+    Your goal is to find the elements of each the transactions from TEXT and return them in json format.
     For example, User asks: Return the following elements:
     ```
     {
-        "product": "id or number of the product (credit card or account)",
-        "total_debt:": "total settlement amount",
-        "number_of_transactions": "number of transactions in the statement",
-        "transactions": [
-        {
+        "bank_statement":{
             "year": "year of the transaction in format YYYY",
             "month": "month of the transaction in format MM",
             "date": "the full date of the transaction in format YYYY-MM-DD",
-            "description": "description of the transaction",
-            "amount": "float specifiying the amount of the transaction",
-            "currency": "currency on which was made the transaction"
-        }
-        ]
+            "transactions": [
+              {
+                  "year": "year of the transaction in format YYYY",
+                  "month": "month of the transaction in format MM",
+                  "date": "the full date of the transaction in format YYYY-MM-DD",
+                  "description": "description of the transaction",
+                  "amount": "float specifiying the amount of the transaction",
+                  "currency": "currency on which was made the transaction DOP or USD"
+              }
+            ]
     }
     ```
     Make sure to return a json with only those fields
     ```json
     {
-        "product": "****-7899",
-        "total_debt:": 330,
-        "number_of_transactions": 3,
-        "transactions": [
-        {"year": 2024, "month": 8, "date": "2024-08-15", "descrition": "description1", "amount": 100, "currency": "USD"},
-        {"year": 2024, "month": 8, "date": "2024-08-16", "descrition": "description1", "amount": 110, "currency": "USD"},
-        {"year": 2024, "month": 8, "date": "2024-08-17", "descrition": "description1", "amount": 120, "currency": "USD"}
-        ]
+        "bank_statement":{
+            "year": 2024,
+            "month": 8,
+            "date": "2024-08-20",
+            "transactions": [
+              {"year": 2024, "month": 8, "date": "2024-08-15", "descrition": "description1", "amount": 100, "currency": "USD"},
+              {"year": 2024, "month": 8, "date": "2024-08-16", "descrition": "description1", "amount": 110, "currency": "DOP"},
+              {"year": 2024, "month": 8, "date": "2024-08-17", "descrition": "description1", "amount": 120, "currency": "USD"}
+            ]
+        }
     }
     ```
     """
@@ -123,12 +100,10 @@ def prompt_template(question):
         "bank_statement":{{
             "year": "The year of the statement",
             "month": "The month of the statement",
-            "date": "The date of the statement in format 2024-01-13",
-            "total_debt": "The Settlement amount for the month",
-            "number_of_transactions": "The number of transactions in the statement",
+            "date": "The date of the statement in format YYYY-MM-DD (e.g. 2024-01-13)",
             "transactions": [
             {{
-                "date": "The date of the transaction in format 2024-01-13",
+                "date": "The date of the transaction in format YYYY-MM-DD (e.g. 2024-01-13)",
                 "description": "The description of the transaction",
                 "amount": "The amount of the transaction",
                 "type": "The type of the transaction if debit or credit",
