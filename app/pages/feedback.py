@@ -123,7 +123,6 @@ def save_suggested_category(
             category=None, 
             suggested_category=suggested_value
         )
-        print(f'is_correct=False {rows=}')
 
         if rows in [0, -1]:
             return dbc.Alert(message, color='danger')
@@ -139,7 +138,6 @@ def save_suggested_category(
             category=record_category, 
             suggested_category=None
         )
-        print(f'is_correct=True {rows=}')
         
         if rows in [0, -1]:
             return dbc.Alert(message, color='danger')

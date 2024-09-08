@@ -333,19 +333,16 @@ def update_existing_transactions(is_correct, desc, reference_category):
         conn = get_db_connection()
         cur = conn.cursor()
 
-        confirmed_category = reference_category if is_correct else None
-        suggested_category = reference_category if not is_correct else None
-
         query = sql.SQL("""
             update transactions
             set predict_category = false
               , updated_at = current_timestamp
-              , confirmed_category = {}
+              , confirmed_category = true
               , suggested_category = {}
-            where upper(description) = upper({}) 
+            where upper(description) = upper({})
+              and confirmed_category = false
             """).format(
-                sql.Literal(confirmed_category),
-                sql.Literal(suggested_category),
+                sql.Literal(reference_category),
                 sql.Literal(desc)
             )
         
@@ -376,6 +373,7 @@ def update_transactions_flag(id):
             set updated_transactions = true
               , updated_at = current_timestamp
             where id = {}
+              and updated_transactions = false
             """).format(
                 sql.Literal(id)
             )
@@ -384,7 +382,10 @@ def update_transactions_flag(id):
         rows_updated = cur.rowcount
         conn.commit()
 
-        return rows_updated, "Rows updated sucessfully."
+        if rows_updated == 0:
+            return rows_updated, "Category updated previously."
+        else:
+            return rows_updated, "Rows updated sucessfully."
         
     except Exception as e:
         print(f"An error ocurred: {str(e)}")
