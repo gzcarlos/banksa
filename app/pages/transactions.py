@@ -49,7 +49,12 @@ def update_table(file_id):
         {'name': 'Type', 'id': 'type', 'type': 'text'},
     ]
 
-    style_data_conditional = [
+    style_data_conditional = get_style_data_conditional()
+
+    return df.to_dict('records'), columns, style_data_conditional
+
+def get_style_data_conditional():
+    return [
         {
             'if': {
                 'column_id': 'id'
@@ -80,11 +85,6 @@ def update_table(file_id):
         },
     ]
 
-    return df.to_dict('records'), columns, style_data_conditional
-
-def get_style_data_conditional():
-    return None
-
 
 layout = html.Div(
     children=[
@@ -108,6 +108,9 @@ layout = html.Div(
                             },
                             sort_action='native',
                             filter_action='native',
+                            page_action="native",
+                            page_current= 0,
+                            page_size= 10,
                         )
                     ],
                     id='trans-content'

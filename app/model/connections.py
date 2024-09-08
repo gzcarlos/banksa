@@ -232,3 +232,165 @@ def get_file_transactions(file_id):
             cur.close()
         if conn:
             conn.close()
+
+def get_missing_vote_descriptions():
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = sql.SQL("""
+            select 
+              * 
+            from knowledge_base
+            where -- has not been voted
+              coalesce(upvoted, downvoted) is null 
+            """)
+        
+        cur.execute(query)
+
+        column_names = [desc[0] for desc in cur.description]
+        results = cur.fetchall()
+
+        df = pd.DataFrame(results, columns=column_names)
+
+        return df, "Successfully retrieved file list from database."
+    except Exception as e:
+        print(f"An error ocurred: {str(e)}")
+        return pd.DataFrame(), f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+def save_feedback(is_correct, id, desc, category, suggested_category):
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        upvoted = None if not is_correct else True
+        downvoted = None if is_correct else True
+
+
+        query = sql.SQL("""
+            update knowledge_base
+            set upvoted = {}
+              , downvoted = {}
+              , suggested_category = upper({})
+              , updated_at = current_timestamp
+            where id = {} 
+            """).format(
+                sql.Literal(upvoted),
+                sql.Literal(downvoted),
+                sql.Literal(suggested_category),
+                sql.Literal(id),
+            )
+        
+        cur.execute(query)
+        rows_updated = cur.rowcount
+        conn.commit()
+
+        if rows_updated == 1:
+            # update all the existing transactions with the same description
+            reference_category = category if is_correct else suggested_category
+            rows, message = update_existing_transactions(is_correct, desc, reference_category)
+
+            if rows >= 0:
+                # update the flag for the knowledge base that indicates 
+                # all transactions were updated
+                upd_row, message = update_transactions_flag(id)
+
+                if upd_row == 1:
+                    return upd_row, "Feedback saved correctly."
+                else:
+                    return upd_row, message
+
+
+            else:
+                return rows, message
+
+        elif rows_updated == 0:
+            return rows_updated, "Could not update the knowledge base. No records were found with specified ID."
+        else:
+            return rows_updated, "More rows than expected were updated."
+    except Exception as e:
+        print(f"An error ocurred: {str(e)}")
+        return -1, f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+def update_existing_transactions(is_correct, desc, reference_category):
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        confirmed_category = reference_category if is_correct else None
+        suggested_category = reference_category if not is_correct else None
+
+        query = sql.SQL("""
+            update transactions
+            set predict_category = false
+              , updated_at = current_timestamp
+              , confirmed_category = {}
+              , suggested_category = {}
+            where upper(description) = upper({}) 
+            """).format(
+                sql.Literal(confirmed_category),
+                sql.Literal(suggested_category),
+                sql.Literal(desc)
+            )
+        
+        cur.execute(query)
+        rows_updated = cur.rowcount
+        conn.commit()
+
+        return rows_updated, "Rows updated sucessfully."
+        
+    except Exception as e:
+        print(f"An error ocurred: {str(e)}")
+        return -1, f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+def update_transactions_flag(id):
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = sql.SQL("""
+            update knowledge_base
+            set updated_transactions = true
+              , updated_at = current_timestamp
+            where id = {}
+            """).format(
+                sql.Literal(id)
+            )
+        
+        cur.execute(query)
+        rows_updated = cur.rowcount
+        conn.commit()
+
+        return rows_updated, "Rows updated sucessfully."
+        
+    except Exception as e:
+        print(f"An error ocurred: {str(e)}")
+        return -1, f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
