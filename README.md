@@ -27,7 +27,7 @@ Instal missing packages inside the Mage container
 
 ```bash
 docker exec -it mage bash
-pip install groq openai
+pip install groq openai sentence-transformers
 ```
 
 ### Google Drive API

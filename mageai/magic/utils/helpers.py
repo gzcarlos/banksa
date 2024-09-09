@@ -12,6 +12,9 @@ import json
 from groq import Groq
 from openai import OpenAI
 
+from elasticsearch import Elasticsearch
+
+
 
 def get_json_from_text(text):
     dotenv_path = Path('magic/.env')
@@ -140,7 +143,122 @@ def get_answer(client, model_name, question):
     )
     return  chat_completion.choices[0].message.content
 
+def elastic_search_knn(field, vector):
+    es_client = Elasticsearch('http://elasticsearch:9200', request_timeout=500) 
+    index_name = "categories"
+    knn = {
+        "field": field,
+        "query_vector": vector,
+        "k": 2,
+        "num_candidates": 10000,
+    }
 
+    search_query = {
+        "knn": knn,
+        "_source": ["id", "description", "category"]
+    }
+
+    es_results = es_client.search(
+        index=index_name,
+        body=search_query
+    )
+    
+    result_docs = []
+    print(es_results['hits']['hits'])
+    
+    for hit in es_results['hits']['hits']:
+        result_docs.append(hit['_source'])
+
+    return result_docs
+
+def description_search(desc):
+    model_name = 'all-MiniLM-L6-v2'
+    embedding_model = SentenceTransformer(model_name)
+    v_desc = embedding_model.encode(desc)
+    return elastic_search_knn('description_vector', v_desc)
+
+def build_category_prompts(desc, search_results):
+    system_prompt = """You are a transactions experts and you determine the exact CATEGORY from the transaction description.
+    For example if the user asks:
+
+    Provide the category for this transaction description:
+    ```json
+    {
+        "description": "SUPERMERCADO BRAVO"
+    }
+    ```
+    Using this REFERENCES:
+    description: LA SIRENA VENEZUELA
+    category: SUPERMARKET
+
+    description: SM NACIONAL AV SAN VICENTE
+    category: SUPERMARKET
+    
+    You respond the following category in json:
+    The final category is:
+    ```json
+    {{
+        "category": "SUPERMARKET"
+    }}
+    ```
+    """
+    prompt_template = """
+    Provide the category for this transaction description:
+    ```json
+    {{
+        "description": "{descrip}"
+    }}
+    ```
+    Using this REFERENCES:
+    {references}
+    
+    The final CATEGORY is:
+    """
+
+    reference = ""
+    for doc in search_results:
+        reference = reference + f"description: {doc['description']}\ncategory: {doc['category']}\n\n"
+
+    user_prompt = prompt_template.format(descrip=desc, references=reference).strip()
+
+    return system_prompt, user_prompt
+
+def get_category(client, model_name, description):
+    search_results = description_search(description)
+    system_prompt, prompt = build_category_prompts(description, search_results)
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "system",
+                "content": system_prompt,
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model=model_name,
+        # model="llama-3.1-70b-versatile",
+    )
+    return  chat_completion.choices[0].message.content
+
+def get_json_from_description_oa(description):
+    dotenv_path = Path('magic/.env')
+    load_dotenv(dotenv_path)
+
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
+    model_name = "gpt-4o-mini"
+
+    result = get_category(client, model_name, description)
+    
+    final_result = result.split('```json')[1].split('```')[0]
+    json_data = json.loads(final_result)
+    json_string = json.dumps(json_data)
+    
+    return json_data['category']
 
 
 def get_credentials():

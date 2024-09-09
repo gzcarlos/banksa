@@ -18,6 +18,7 @@ pypdf
 
 ## llm
 groq
+openai
 
 ## others
 python-dotenv

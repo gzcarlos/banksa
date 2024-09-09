@@ -36,13 +36,13 @@ blocks:
   language: python
   name: vibrant aspen
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
   - astonishing_potion
   uuid: vibrant_aspen
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
@@ -53,13 +53,13 @@ blocks:
   language: python
   name: late water
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
   - vibrant_aspen
   uuid: late_water
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     data_provider: postgres
@@ -76,7 +76,7 @@ blocks:
   language: sql
   name: mellow spellcaster
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:

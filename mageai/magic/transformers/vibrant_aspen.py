@@ -32,7 +32,7 @@ def transform(data, *args, **kwargs):
     """
     data = data[['id', 'description', 'category']]
 
-    data.apply(, axis=1)
+    data = data.apply(add_row_embeddings, axis=1)
     cats = data.to_dict('records')
 
     return data

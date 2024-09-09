@@ -18,7 +18,7 @@ def export_data(data, *args, **kwargs):
         Optionally return any object and it'll be logged and
         displayed when inspecting the block run.
     """
-    es_client = Elasticsearch('http://127.0.0.1:9200', request_timeout=500) 
+    es_client = Elasticsearch('http://elasticsearch:9200', request_timeout=500) 
 
     index_settings = {
         "settings": {
@@ -56,8 +56,9 @@ def export_data(data, *args, **kwargs):
             es_client.index(index=index_name, document=doc)
             doc['indexed'] = True
         except Exception as e:
-            doc['indexed'] = True
+            doc['indexed'] = False
 
+    # print(docs[0])
     new_data = pd.DataFrame(docs)
 
     return new_data
