@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  banksa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: banksa-app
+    ports:
+      - "8050:8050"  # Adjust this if your app uses a different port
+    volumes:
+      - ./app:/usr/src/app/app
+    networks:
+      - banksa-network
+    depends_on:
+      - postgres
+      - elasticsearch
+
+  mageai:
+    image: mageai/mageai:latest
+    container_name: mage
+    ports:
+      - "6789:6789"
+    volumes:
+      - ./mageai:/home/src
+    networks:
+      - banksa-network
+    command: mage start magic
+    depends_on:
+      - postgres
+      - elasticsearch
+
+  postgres:
+    image: postgres:13
+    container_name: pg-database
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: banksa
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - banksa-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "8082:80"
+    networks:
+      - banksa-network
+    depends_on:
+      - postgres
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - banksa-network
+
+networks:
+  banksa-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

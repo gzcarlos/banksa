@@ -1,19 +1,64 @@
-# banksa
-Bank Statement Analyser app with LLMs
+# Bank Statement Analyser (banksa)
+ 
+An app that extracts your transactions using LLM's and categorize them to let you know how your expenses are going.
 
+
+## The problem
+
+You probably have a PDF for each month of your Credit Card Statement or Account statement.
+Those transactions may not be loaded and centralized for every bank were you have on of those products.
+
+And you would like to have a centrilized solution that takes all the transactiones, "categorize" them in order to show you all in different ways
+1. Simple list of all transactions
+2. Some dashboards with all the categories and which is the category you use the most weighted by the sum of amounts. Aldo the category where you consume the least of your credit or expenses.
+
+## The Solution
+
+With this app you would
+1. Upload the PDF and the content's text will be extracted
+2. An LLM model would be used to extract the transactions from the PDF text's.
+3. For all new descriptions not previously known for the app, you could give feedback to indicate if the category suits the description of the transaction. You would give only feedback once each new transaction description.
+4. The app workers (pipelines in Mage) will also try to generate the right category after the transactions are extraced using as reference your own feedback
 
 ## Setup
 
-### General
+> This setup has a been used in a Github Codespaces with 4-cores machine.
+
+For this app some other apps are going to be used
+1. **PostgresSQL**: as main database.
+2. **MageAI**: as workers orchestrator (pipelines).
+3. **ElasticSearch**: as vector database to store descriptions and categories you give feedback.
+4. **PgAdmin**: as Database IDE.
+
+Other services used in this solution are:
+1. Groq: as free LLM source in case you don't have a OpenAI subscription. Usefull for using `llama3.1-70B` model
+2. OpenAI: as LLM used to extract the content and generate categories for transactions when you are note giving feedback.
+
+This services are used for RAG on PDF content and getting transactions categories.
+
+From now on you can use the `Docker Compose guide` for installing or the `Manual setup`. After that runs the `Common setup`. And then continue with the `database schema` section
+
+### Docker Compose guide
+
+Execute this 2 commands to complete the creation of the 
+```bash
+# create all the images and pull some others needeed
+docker compose build
+# run all the images
+docker compose up -d
+```
+
+### Manual setup
 
 Create a network for docker
 ```bash
 docker network create banksa-network
 ```
 
+
 ### Mage AI
 
-Create container
+Create docker container for MageAI using the folder `/mageai` as source archive for all the files
 ```bash
 docker run -d \
   --name mage \
@@ -22,23 +67,6 @@ docker run -d \
   --network=banksa-network \
   mageai/mageai mage start magic
 ```
-
-Instal missing packages inside the Mage container
-
-```bash
-docker exec -it mage bash
-pip install groq openai sentence-transformers
-```
-
-### Google Drive API
-1. Create [Google Cloud Project](https://console.cloud.google.com/):
-2. Go to the Google Cloud Console.
-3. Create a new project.
-4. Enable the Google Drive API for your project.
-5. Configure the OAuth consent screen.
-6. Create credentials (OAuth 2.0 Client IDs) and download the `credentials.json` file.
-7. Create a folder in [google drive](https://drive.google.com/) and `Manage Access` to anyone with the link can `view`
-8. Run the `/notebooks/test_google_drive_api.ipynb` using the previous folder  to generate a `token.json` in `/notebooks` folder
 
 ### PostgreSQL
 
@@ -63,11 +91,6 @@ docker run -d \
   dpage/pgadmin4
 ```
 
-1. Access to pdadmin on the browser [http://localhost:8082](http://localhost:8082)
-2. On the `Servers` right click and select `Register` and set `Name`. In Connections use the host `pg-database` and credentials from the previous commands
-3. You should see `banksa` database and can create a table under `schemas/tables`
-
-
 ### Elasticsearch
 
 Install with this command
@@ -86,8 +109,23 @@ docker run -d \
 Check status on [http://localhost:9200/_cluster/health?pretty](http://localhost:9200/_cluster/health?pretty)
 
 
+### Common setup
+
+Instal missing packages inside the `mage` container
+
+```bash
+docker exec -it mage bash
+pip install groq openai sentence-transformers
+```
+
 ### Database schema
 
+**In pgadmin**
+1. Access to pdadmin on the browser [http://localhost:8082](http://localhost:8082)
+2. On the `Servers` right click and select `Register` and set `Name`. In Connections use the host `pg-database` and credentials from the previous commands
+3. You should see `banksa` database and can create a table under `schemas/tables`
+
+Then inside the database, execute all this objects creation
 ```sql
 CREATE TABLE files (
   id SERIAL PRIMARY KEY,
