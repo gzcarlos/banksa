@@ -155,6 +155,24 @@ create table knowledge_base(
   created_at timestamp default current_timestamp,
   updated_at timestamp
 );
+create or replace view v_knowledge_base as 
+SELECT a.id
+  , a.description
+  , CASE
+      WHEN a.upvoted = true THEN a.category
+      WHEN a.downvoted = true AND a.suggested_category IS NOT NULL THEN a.suggested_category
+      ELSE a.category
+    END AS category
+  , a.indexed
+  , a.created_at
+  , a.updated_at
+FROM knowledge_base a
+WHERE a.upvoted = true 
+  OR (
+    a.downvoted = true 
+    AND a.suggested_category IS NOT NULL
+  )
+;
 ```
 
 

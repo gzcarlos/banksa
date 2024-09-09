@@ -1,5 +1,8 @@
 pandas
 jupyter
+elasticsearch
+tqdm 
+sentence-transformers
 
 # Google Cloud
 google-api-python-client 
