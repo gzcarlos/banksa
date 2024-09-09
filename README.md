@@ -228,3 +228,37 @@ try:
 except requests.exceptions.ReadTimeout:
     pass  # This will almost always happen, which is what we want
 ```
+
+
+## The operations
+
+This app consists in
+
+### Upload
+1. Letting the user upload PDF files. The files are supposed to be bank statement files containing transactions
+    1.  Each file text is extracted and stored in the database.
+    2. Every file uploaded can only be loaded into the system once. The key fields to identify its uniqueness is the `file_name` and `file_size`.
+2. After background process #1, The user can also see `transactions` from each file.
+3. And also can see some transactions descriptions to give `feedback` if there are any.
+    1. In order to give `feedback` the user can mark `Yes` or `No` if the first category (guessed by the LLM on extraction of `json` from the file text)
+    2. When answered `Yes` the transactions with the same descriptions gets updated.
+    3. When `No` the user can give a suggestion on `category` and that `category` will be used in all exisiting transactions with the same description.
+    4. The user can only give one feedback on each transaction description.
+    5. And feedback made on each description would be considered as `knowledge base` for the time when the app would need to predict the category of not answered transactions description. See process #4.
+
+
+
+### Background
+
+All this processes are made in a Mage Pipeline.
+
+**1. get_files_missing_json**
+This process gets the files with no `json` data extracted (the `json` data contains the `transactions` and the main data from the statement like `date`)
+
+Also this transactions unique descriptions are stored in the knowledge data base for further feedback from the user
+
+**2. index_knowledge_base** Every 10 mins the this process will look for every feedback made by the user and not stored in the vectorDB (ElasticSearch)
+
+**3. extract_file_transactions** Every 10 mins this process will look for the files which transactions are not extracted and saved to the database. 
+
+**4. complete_transactions_categories** This process runs every 10 mins and try to predict the category of every not confirmed transaction's category using LLM and the `knowledge_base` created by the user's feedback.

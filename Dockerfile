@@ -1,8 +1,12 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM bitnami/python:3.9.20
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
+
+# Install dependencies os packages
+RUN apt-get update && apt-get install -y \
+    postgresql-server-dev-all
 
 # Copy the requirements file into the container at /usr/src/app
 COPY requirements.txt ./
@@ -19,7 +23,7 @@ EXPOSE 8050
 
 # Define environment variable
 # (You can add more environment variables if needed)
-ENV NAME World
+# ENV NAME World
 
 # Run app.py when the container launches
 CMD ["python", "app/app.py"]

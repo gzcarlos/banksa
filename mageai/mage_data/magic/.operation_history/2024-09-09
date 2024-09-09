@@ -1,1 +1,2 @@
 {"operation": "create", "resource": {"type": "pipeline", "uuid": "index_knowledge_base"}, "timestamp": 1725844391, "user": null}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "complete_transactions_categories"}, "timestamp": 1725920157, "user": null}

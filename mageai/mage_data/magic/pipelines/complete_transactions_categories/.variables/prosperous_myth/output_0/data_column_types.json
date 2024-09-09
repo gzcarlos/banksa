@@ -1,0 +1,1 @@
+{"id": "int64", "file_id": "int64", "statement_date": "date", "statement_year": "int64", "statement_month": "int64", "amount": "float64", "category": "str", "currency": "str", "description": "str", "_date": "date", "_type": "str", "predict_category": "bool", "confirmed_category": "str", "suggested_category": "str", "created_at": "datetime64[ns]", "updated_at": "datetime64[ns]"}
