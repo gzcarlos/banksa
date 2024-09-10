@@ -13,7 +13,7 @@ from groq import Groq
 from openai import OpenAI
 
 from elasticsearch import Elasticsearch
-
+from sentence_transformers import SentenceTransformer
 
 
 def get_json_from_text(text):
@@ -164,7 +164,7 @@ def elastic_search_knn(field, vector):
     )
     
     result_docs = []
-    print(es_results['hits']['hits'])
+    # print(es_results['hits']['hits'])
     
     for hit in es_results['hits']['hits']:
         result_docs.append(hit['_source'])

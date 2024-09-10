@@ -96,13 +96,13 @@ docker run -d \
 Install with this command
 ```bash
 docker run -d \
-    --rm \
     --name elasticsearch \
     -p 9200:9200 \
     -p 9300:9300 \
     -e "discovery.type=single-node" \
     -e "xpack.security.enabled=false" \
     --network=banksa-network \
+    -v ./vectordb-data:/usr/share/elasticsearch/data \
     docker.elastic.co/elasticsearch/elasticsearch:8.4.3
 ```
 

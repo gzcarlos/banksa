@@ -28,19 +28,39 @@ blocks:
     data_provider: postgres
     data_provider_profile: dev
     export_write_policy: append
-  downstream_blocks: []
+  downstream_blocks:
+  - colossal_ash
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
   name: still breeze
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
   - prosperous_myth
   uuid: still_breeze
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    data_provider: postgres
+    data_provider_profile: dev
+    export_write_policy: append
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: colossal ash
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - still_breeze
+  uuid: colossal_ash
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
