@@ -260,6 +260,20 @@ def get_json_from_description_oa(description):
     
     return json_data['category']
 
+def compute_similarity_mod(initial_value, value, model):
+    
+    v_llm = model.encode(value)
+    v_orig = model.encode(initial_value)
+    
+    return v_llm.dot(v_orig)
+
+def compute_similarity(initial_value, value):
+    model_name = 'all-MiniLM-L6-v2'
+    model = SentenceTransformer(model_name)
+    v_llm = model.encode(value)
+    v_orig = model.encode(initial_value)
+    
+    return v_llm.dot(v_orig)
 
 def get_credentials():
     creds = None

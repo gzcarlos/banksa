@@ -1,0 +1,1 @@
+{"id": "int64", "description": "str", "category": "str", "upvoted": "str", "downvoted": "str", "suggested_category": "str", "updated_transactions": "bool", "indexed": "bool", "created_at": "datetime64[ns]", "updated_at": "datetime64[ns]"}

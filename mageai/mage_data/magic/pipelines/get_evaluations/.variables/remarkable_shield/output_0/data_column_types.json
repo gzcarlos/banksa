@@ -1,0 +1,1 @@
+{"id": "int64", "concept": "str", "cosine_similarity_mean": "float64", "cosine_similarity_min": "float64", "cosine_similarity_max": "float64", "hit_rate": "float64", "created_at": "datetime64[ns]"}

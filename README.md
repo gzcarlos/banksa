@@ -211,6 +211,15 @@ WHERE a.upvoted = true
     AND a.suggested_category IS NOT NULL
   )
 ;
+create table evaluations(
+	id serial primary key,
+	concept text,
+	cosine_similarity_mean float, 
+	cosine_similarity_min float, 
+	cosine_similarity_max float, 
+	hit_rate float,
+	created_at timestamp default current_timestamp
+);
 ```
 
 

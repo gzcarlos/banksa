@@ -339,12 +339,13 @@ def update_existing_transactions(is_correct, desc, reference_category):
               , updated_at = current_timestamp
               , confirmed_category = true
               , suggested_category = {}
-            where upper(description) = upper({})
-              and confirmed_category = false
+            where upper(trim(description)) = upper(trim({}))
+              and coalesce(confirmed_category, false) = false
             """).format(
                 sql.Literal(reference_category),
                 sql.Literal(desc)
             )
+        # print(query.as_string(conn))
         
         cur.execute(query)
         rows_updated = cur.rowcount

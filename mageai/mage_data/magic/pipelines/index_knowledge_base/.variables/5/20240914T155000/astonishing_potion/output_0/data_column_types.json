@@ -1,0 +1,1 @@
+{"id": "int64", "description": "str", "category": "str", "indexed": "bool", "created_at": "datetime64[ns]", "updated_at": "datetime64[ns]"}
