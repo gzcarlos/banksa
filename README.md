@@ -113,6 +113,8 @@ dev:
   POSTGRES_PORT: 5432
 ```
 
+The final service is available at [http://localhost:6789](http://localhost:6789)
+
 ### PostgreSQL setup
 
 Install the database service and the IDE (pgadmin)
@@ -135,6 +137,8 @@ docker run -d \
   --name pgadmin \
   dpage/pgadmin4
 ```
+
+Service available at [http://localhost:8082](http://localhost:8082). Use credentials from previous commands.
 
 ### Elasticsearch setup
 
@@ -337,6 +341,8 @@ All this processes are made in a Mage Pipeline.
   4. **complete_transactions_categories** This process runs every 10 mins and try to predict the category of every not confirmed transaction's category using LLM and the `knowledge_base` created by the user's feedback.
 
   5. **get_evaluations** execute 2 evaluations of the efectiveness from the prediction and the feedback. The first is a _cosine similarity_ between sugested categories (on feedback) and the initial category made when extracting the transactions. Other evaluation used is _hit rate_ for determine how much of all transactions had an incorrect category, determined by de down votes on feedback results. For more information look at the `Evaluations` in `The Operations` section
+
+**_Warning_**: In Mage instance most of the pipelines need to be executed manually since it's loosing the reference from [magic/utils/helpers.py](/mageai/magic/utils/helpers.py) on the schedulers that runs the python blocks. 
 
 ## LLM's used
 
