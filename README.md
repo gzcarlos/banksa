@@ -2,6 +2,20 @@
  
 An app that extracts your transactions using LLM's and categorize them to let you know how your expenses are going.
 
+## Content
+
+1. The problem
+2. The Solution
+3. Setup
+    1. Docker compose guide
+    2. Manual docker setup
+        1. Mage AI setup
+        2. PostgreSQL setup
+        3. Elasticsearch setup
+    3. Common setup
+    4. Database schema
+    5. Database schema
+
 
 ## The problem
 
@@ -48,7 +62,7 @@ docker compose build
 docker compose up -d
 ```
 
-### Manual setup
+### Manual docker setup
 
 Create a network for docker
 ```bash
@@ -56,7 +70,7 @@ docker network create banksa-network
 ```
 
 
-### Mage AI
+### Mage AI setup
 
 Create docker container for MageAI using the folder `/mageai` as source archive for all the files
 ```bash
@@ -68,7 +82,7 @@ docker run -d \
   mageai/mageai mage start magic
 ```
 
-### PostgreSQL
+### PostgreSQL setup
 
 Install the database service and the IDE (pgadmin)
 
@@ -91,7 +105,7 @@ docker run -d \
   dpage/pgadmin4
 ```
 
-### Elasticsearch
+### Elasticsearch setup
 
 Install with this command
 ```bash
@@ -257,11 +271,11 @@ This app consists in
 
 
 
-### Background
+### Background (workflows)
 
 All this processes are made in a Mage Pipeline.
 
-**1. get_files_missing_json**
+**1. fill_files_missing_json**
 This process gets the files with no `json` data extracted (the `json` data contains the `transactions` and the main data from the statement like `date`)
 
 Also this transactions unique descriptions are stored in the knowledge data base for further feedback from the user
@@ -271,3 +285,5 @@ Also this transactions unique descriptions are stored in the knowledge data base
 **3. extract_file_transactions** Every 10 mins this process will look for the files which transactions are not extracted and saved to the database. 
 
 **4. complete_transactions_categories** This process runs every 10 mins and try to predict the category of every not confirmed transaction's category using LLM and the `knowledge_base` created by the user's feedback.
+
+**5. get_evaluations** execute 2 evaluations of the efectiveness from the prediction and the feedback. The first is a _cosine similarity_ between sugested categories (on feedback) and the initial category made when extracting the transactions. Other evaluation used is _hit rate_ for determine how much of all transactions had an incorrect category, determined by de down votes on feedback results.
