@@ -1,1 +1,1 @@
-{"concept": "str", "consin_similarity_mean": "float64", "consin_similarity_min": "float64", "consin_similarity_max": "float64", "hit_rate": "float64"}
+{"concept": "str", "cosine_similarity_mean": "float64", "cosine_similarity_min": "float64", "cosine_similarity_max": "float64", "hit_rate": "float64"}

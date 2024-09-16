@@ -265,6 +265,68 @@ def get_missing_vote_descriptions():
         if conn:
             conn.close()
 
+def get_voted_descriptions():
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = sql.SQL("""
+            select 
+              * 
+            from knowledge_base
+            where -- has not been voted
+              coalesce(upvoted, downvoted) is not null 
+            """)
+        
+        cur.execute(query)
+
+        column_names = [desc[0] for desc in cur.description]
+        results = cur.fetchall()
+
+        df = pd.DataFrame(results, columns=column_names)
+
+        return df, "Successfully retrieved file list from database."
+    except Exception as e:
+        print(f"An error ocurred: {str(e)}")
+        return pd.DataFrame(), f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+def get_evaluations():
+    cur = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = sql.SQL("""
+            select * 
+            from evaluations
+            order by created_at
+            """)
+        
+        cur.execute(query)
+
+        column_names = [desc[0] for desc in cur.description]
+        results = cur.fetchall()
+
+        df = pd.DataFrame(results, columns=column_names)
+
+        return df, "Successfully retrieved file list from database."
+    except Exception as e:
+        print(f"An error ocurred: {str(e)}")
+        return pd.DataFrame(), f"An error ocurred: {str(e)}"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
 def save_feedback(is_correct, id, desc, category, suggested_category):
     cur = None
     conn = None

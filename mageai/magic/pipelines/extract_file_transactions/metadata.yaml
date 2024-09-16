@@ -44,13 +44,13 @@ blocks:
   language: python
   name: polished wind
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
   - impressive_destiny
   uuid: polished_wind
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: yellow
   configuration:
     data_provider: postgres
@@ -67,13 +67,13 @@ blocks:
   language: sql
   name: effortless song
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: custom
   upstream_blocks:
   - polished_wind
   uuid: effortless_song
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: teal
   configuration:
     data_provider: postgres

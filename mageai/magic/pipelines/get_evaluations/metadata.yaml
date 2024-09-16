@@ -37,13 +37,13 @@ blocks:
   language: python
   name: phenomenal amulet
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
   - primal_dew
   uuid: phenomenal_amulet
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     data_provider: postgres

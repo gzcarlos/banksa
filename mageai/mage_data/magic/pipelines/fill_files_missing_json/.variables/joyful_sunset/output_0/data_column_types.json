@@ -1,0 +1,1 @@
+{"id": "int64", "name": "str", "size": "float64", "file_text": "str", "generated_json": "str", "json_extracted": "bool", "transactions_extracted": "bool", "created_at": "datetime64[ns]", "updated_at": "datetime64[ns]"}
