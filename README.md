@@ -2,6 +2,9 @@
  
 An app that extracts your transactions using LLM's and categorize them to let you know how your expenses are going.
 
+
+This App was made initialy as the project for [LLM Zoomcamp 2024](https://github.com/DataTalksClub/llm-zoomcamp) of 2024 from [DataTalks.Club](https://datatalks.club/) to whom do I owe my thanks.
+
 ## Content
 
 1. The problem
@@ -14,7 +17,13 @@ An app that extracts your transactions using LLM's and categorize them to let yo
         3. Elasticsearch setup
     3. Common setup
     4. Database schema
-    5. Database schema
+4. The Operations
+    1. Upload
+    2. Feedback
+    3. Transactions
+    4. Dashboards
+    5. Evaluations
+    6. Backgroun (workflows)
 
 
 ## The problem
@@ -80,6 +89,28 @@ docker run -d \
   -v $(pwd)/mageai:/home/src \
   --network=banksa-network \
   mageai/mageai mage start magic
+```
+
+Make sure to have a `.env` file (may use the template from [sample.env](/sample.env) file) and complete this 2 variables
+
+```bash
+GROQ_API_KEY=your_api_key_for_groq.console
+OPENAI_API_KEY=your_api_key_for_openai.platform
+```
+And also copy that file in [/mageai/magic/](/mageai/magic/) for Mage AI app to use them.
+
+For database configuration make sure to add in [io_config.yaml](/mageai/magic/io_config.yaml) the following sections
+
+```bash
+dev:
+  # PostgresSQL
+  POSTGRES_CONNECT_TIMEOUT: 10
+  POSTGRES_DBNAME: banksa
+  POSTGRES_SCHEMA: public # Optional
+  POSTGRES_USER: root
+  POSTGRES_PASSWORD: root
+  POSTGRES_HOST: pg-database
+  POSTGRES_PORT: 5432
 ```
 
 ### PostgreSQL setup
@@ -237,21 +268,6 @@ create table evaluations(
 ```
 
 
-Run extract_transactions_from_files
-```bash
-curl -X POST http://localhost:6789/api/pipeline_schedules/4/pipeline_runs/aa5cf2fcfd4c4e7fb64c7da8ef924b25 --header 'Content-Type: application/json'
-```
-```python
-import requests
-# do not wait for the response
-try:
-    requests.post("http://localhost:6789/api/pipeline_schedules/4/pipeline_runs/aa5cf2fcfd4c4e7fb64c7da8ef924b25", 
-                  headers={"Content-Type": "application/json"}, 
-                  timeout=0.01)
-except requests.exceptions.ReadTimeout:
-    pass  # This will almost always happen, which is what we want
-```
-
 
 ## The operations
 
@@ -261,29 +277,77 @@ This app consists in
 1. Letting the user upload PDF files. The files are supposed to be bank statement files containing transactions
     1.  Each file text is extracted and stored in the database.
     2. Every file uploaded can only be loaded into the system once. The key fields to identify its uniqueness is the `file_name` and `file_size`.
-2. After background process #1, The user can also see `transactions` from each file.
-3. And also can see some transactions descriptions to give `feedback` if there are any.
-    1. In order to give `feedback` the user can mark `Yes` or `No` if the first category (guessed by the LLM on extraction of `json` from the file text)
-    2. When answered `Yes` the transactions with the same descriptions gets updated.
-    3. When `No` the user can give a suggestion on `category` and that `category` will be used in all exisiting transactions with the same description.
-    4. The user can only give one feedback on each transaction description.
-    5. And feedback made on each description would be considered as `knowledge base` for the time when the app would need to predict the category of not answered transactions description. See process #4.
+    2. After background process #1, The user can also see `transactions` from each file.
+    3. And also can see some transactions descriptions to give `feedback` if there are any.
 
 
+### Feedback
+
+  1. In order to give `feedback` the user can mark `Yes` or `No` if the first category (guessed by the LLM on extraction of `json` from the file text)
+  2. When answered `Yes` the transactions with the same descriptions gets updated.
+  3. When `No` the user can give a suggestion on `category` and that `category` will be used in all exisiting transactions with the same description.
+  4. The user can only give one feedback on each transaction description.
+  5. And feedback made on each description would be considered as `knowledge base` for the time when the app would need to predict the category of not answered transactions description. See process #4.
+
+### Transactions
+
+  1. The user will have available a section in the `App` for transactions where he would see every transaction extracted from each file (filtered by file)
+  2. Each transaction have:
+      1. **Date**: on which was made the transaction 
+      2. **Description**: The whole description of the commerce or motive of the transaction
+      3. **Category**: The initial category predicted from the transactions description, or the predicted category if no feedback was made (using the LLM and the reference from the knowledge base created using feedbacks) or finally the suggested category from the feedback made if the initial was not correct.
+      4. **Amount**: as self described
+      5. **Currency**: used in the transaction
+      6. **Type**: Debit or credit, (all payments are treated as `Credit` and all other transactions like `Debit`)
+
+
+### Dashboards
+
+In the all there are 2 types of graphs page based on the role of the user
+
+  1. **User**: Can see all data related to the details of the transactions grouped by `amount` and  and `quantity`
+  2. **Admin**: (_more like a health checker for the app_) Can see 
+
+      1. All the the feedbacks distribution, how many descriptions were `downvoted` and hoy many were `upvoted`.
+      2. The result of the `consine similarity` evaluation over time.
+      3. The result of the `hit-rate` evaluation over time.
+
+### Evaluations
+
+For the purpose of this solution tried to evaluate the texts from `description` and `category` combined and separately, and found the result is better when the `description` is evaluated so, as can be appretiated on the notebook [evaluate_vector_search_fields.ipynb](/notebooks/evaluate_vector_search_fields.ipynb)
+
+Used 2 metrics for evaluation the results between the knowledge base used in the VectorDB (Elasticsearch) and the results:
+1. **Hit-rate**: how relevant is the each text when searched with itself.
+2. **MRR (Mean Reciprocal Rank)**: How is each text is related with each other text.
+
+Used the data from the knowledge base and tried each metrinc on every field combination. Found the result is optimal when `description` is used, so used it in the evaluation workflow.
 
 ### Background (workflows)
 
 All this processes are made in a Mage Pipeline.
 
-**1. fill_files_missing_json**
-This process gets the files with no `json` data extracted (the `json` data contains the `transactions` and the main data from the statement like `date`)
+  1. **fill_files_missing_json** This process gets the files with no `json` data extracted (the `json` data contains the `transactions` and the main data from the statement like `date`).
 
-Also this transactions unique descriptions are stored in the knowledge data base for further feedback from the user
+      Also this transactions unique descriptions are stored in the knowledge data base for further feedback from the user
 
-**2. index_knowledge_base** Every 10 mins the this process will look for every feedback made by the user and not stored in the vectorDB (ElasticSearch)
+  2. **index_knowledge_base** Every 10 mins the this process will look for every feedback made by the user and not stored in the vectorDB (ElasticSearch) to save them in Elasticsearch
 
-**3. extract_file_transactions** Every 10 mins this process will look for the files which transactions are not extracted and saved to the database. 
+  3. **extract_file_transactions** Every 10 mins this process will look for the files which transactions are not extracted and saved to the database. 
 
-**4. complete_transactions_categories** This process runs every 10 mins and try to predict the category of every not confirmed transaction's category using LLM and the `knowledge_base` created by the user's feedback.
+  4. **complete_transactions_categories** This process runs every 10 mins and try to predict the category of every not confirmed transaction's category using LLM and the `knowledge_base` created by the user's feedback.
 
-**5. get_evaluations** execute 2 evaluations of the efectiveness from the prediction and the feedback. The first is a _cosine similarity_ between sugested categories (on feedback) and the initial category made when extracting the transactions. Other evaluation used is _hit rate_ for determine how much of all transactions had an incorrect category, determined by de down votes on feedback results.
+  5. **get_evaluations** execute 2 evaluations of the efectiveness from the prediction and the feedback. The first is a _cosine similarity_ between sugested categories (on feedback) and the initial category made when extracting the transactions. Other evaluation used is _hit rate_ for determine how much of all transactions had an incorrect category, determined by de down votes on feedback results. For more information look at the `Evaluations` in `The Operations` section
+
+## LLM's used
+
+LLM's _(Large Language Models)_ are a core utility used in this solution. 
+
+Mainly they are used in:
+1. Transactions JSON generated from file text
+2. To predict a category passing as reference the top 2 results from the knowledge base (VectorDB - Elasticsearch)
+
+Tried to use some models offered freely from providers like [Groq Console](https://console.groq.com/playground) which offers a `llama-3.1-70b-versatile` available, but the results for the transactions list from each file text do not provided a constant `JSON` text to extract.
+
+So tried another model used with minumum cost like [OpenAI](https://platform.openai.com/)'s Platform page, selecting `gpt-4o-mini`.
+
+All implementations of this model are are defined in [helpers.py](/mageai/magic/utils/helpers.py) file.
