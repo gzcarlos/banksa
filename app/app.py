@@ -20,7 +20,7 @@ app.layout = html.Div([
         children=[
             dbc.NavItem(dbc.NavLink(f"{page['name'].title()}", href=page['relative_path'])) for page in dash.page_registry.values()
         ] ,
-        brand="Bank Statement Appreciator",
+        brand="Bank Statement Analyser",
         brand_href="/",
         color="primary",
         dark=True,
